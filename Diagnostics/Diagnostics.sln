@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoyalCode.Diagnostics", "Ro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoyalCode.Diagnostics.AspNetCore", "RoyalCode.Diagnostics.AspNetCore\RoyalCode.Diagnostics.AspNetCore.csproj", "{805EBAD1-BA92-4D4B-A3D3-ECB6F4053B49}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".items", ".items", "{CB9E2BEB-037B-4855-A65C-70E85774CB99}"
+	ProjectSection(SolutionItems) = preProject
+		icon.png = icon.png
+		base.targets = base.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
