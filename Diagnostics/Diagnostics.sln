@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoyalCode.Diagnostics", "RoyalCode.Diagnostics\RoyalCode.Diagnostics.csproj", "{23715223-8444-4AB1-A4BF-A87D01D6BCE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoyalCode.Diagnostics.AspNetCore", "RoyalCode.Diagnostics.AspNetCore\RoyalCode.Diagnostics.AspNetCore.csproj", "{805EBAD1-BA92-4D4B-A3D3-ECB6F4053B49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".items", ".items", "{CB9E2BEB-037B-4855-A65C-70E85774CB99}"
+	ProjectSection(SolutionItems) = preProject
+		icon.png = icon.png
+		base.targets = base.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23715223-8444-4AB1-A4BF-A87D01D6BCE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23715223-8444-4AB1-A4BF-A87D01D6BCE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23715223-8444-4AB1-A4BF-A87D01D6BCE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23715223-8444-4AB1-A4BF-A87D01D6BCE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{805EBAD1-BA92-4D4B-A3D3-ECB6F4053B49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{805EBAD1-BA92-4D4B-A3D3-ECB6F4053B49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{805EBAD1-BA92-4D4B-A3D3-ECB6F4053B49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{805EBAD1-BA92-4D4B-A3D3-ECB6F4053B49}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
