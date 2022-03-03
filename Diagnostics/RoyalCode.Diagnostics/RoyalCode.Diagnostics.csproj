@@ -3,7 +3,40 @@
   <Import Project="..\base.targets" />
   
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net5;net6</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net5;net6</TargetFrameworks>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>1.0.0-preview1.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Description>
+      Infrastructure library for easy use of Activity and DiagnosticListener.
+    </Description>
+    <PackageTags>RoyalCode Activity Diagnostics</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RoyalCode.Extensions.PropertySelection" Version="1.0.0-preview1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6' ">
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net5' ">
+    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.7.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    
+  </ItemGroup>
+  
+  
 
 </Project>
