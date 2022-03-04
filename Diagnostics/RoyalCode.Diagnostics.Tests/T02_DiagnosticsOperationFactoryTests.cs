@@ -23,10 +23,3 @@ public class OtherTestsDiagnostic : DiagnosticOperationFactory<OtherTestsDiagnos
 {
     
 }
-
-[DiagnosticListenerName("MyCompany.Diagnostics.MyComponent")]
-public class MyComponentDiagnostics : DiagnosticOperationFactory<MyComponentDiagnostics>
-{
-    public static DiagnosticOperation CreateDoingSomethingOperation() 
-        => CreateOperation("DoingSomething");
-}
