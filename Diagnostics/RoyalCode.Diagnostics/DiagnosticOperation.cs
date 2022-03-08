@@ -14,8 +14,9 @@ namespace RoyalCode.Diagnostics;
 /// </summary>
 public sealed class DiagnosticOperation : IDisposable
 {
+    private readonly OperationItems items;
     private readonly bool isDiagnosticsEnabled;
-    private readonly Dictionary<Type, object> items;
+    
     private bool isStarted;
     private bool isDisposed;
 
@@ -40,6 +41,11 @@ public sealed class DiagnosticOperation : IDisposable
     /// <param name="listener">Diagnostic listener.</param>
     /// <param name="operationName">The operation name</param>
     public DiagnosticOperation(DiagnosticListener listener, string operationName)
+        : this(listener, operationName, null)
+    { }
+
+    private DiagnosticOperation(DiagnosticListener listener, string operationName,
+        OperationItems? items)
     {
         Listener = listener ?? throw new ArgumentNullException(nameof(listener));
 
@@ -47,7 +53,7 @@ public sealed class DiagnosticOperation : IDisposable
 
         isDiagnosticsEnabled = listener.IsEnabled(operationName);
 
-        items = new Dictionary<Type, object>();
+        this.items = items ?? new();
     }
 
     /// <summary>
@@ -79,7 +85,7 @@ public sealed class DiagnosticOperation : IDisposable
             else
                 With(ex).Add().AddAs<Exception>();
 
-        Listener.Write($"{Activity.OperationName}.Error", this);
+        Listener.Write($"{Activity.OperationName}.Error", items);
     }
 
     /// <summary>
@@ -87,24 +93,21 @@ public sealed class DiagnosticOperation : IDisposable
     /// </summary>
     /// <typeparam name="TItem">The item type.</typeparam>
     /// <param name="item">The item object.</param>
-    public void AddItem<TItem>(TItem item) =>
-        items.Add(typeof(TItem), item ?? throw new ArgumentNullException(nameof(item)));
+    public void AddItem<TItem>(TItem item) => items.AddItem(item);
 
     /// <summary>
     /// Get the item of the type, when not found, returns default.
     /// </summary>
     /// <typeparam name="TItem">The item type.</typeparam>
     /// <returns>The item object or default</returns>
-    public TItem? TryGetItem<TItem>()
-        => (TItem?) (items.TryGetValue(typeof(TItem), out var item) ? item : InternalTryGetItem(typeof(TItem)));
+    public TItem? TryGetItem<TItem>() => items.TryGetItem<TItem>();
 
     /// <summary>
     /// Get the item of the type, when not found, returns default.
     /// </summary>
     /// <param name="type">The item type.</param>
     /// <returns>The item object or default</returns>
-    public object? TryGetItem(Type type)
-        => items.TryGetValue(type, out var item) ? item : InternalTryGetItem(type);
+    public object? TryGetItem(Type type) => items.TryGetItem(type);
 
     /// <summary>
     /// Get the item of the type, when not found, create.
@@ -112,20 +115,7 @@ public sealed class DiagnosticOperation : IDisposable
     /// <typeparam name="TItem">The item type.</typeparam>
     /// <param name="creation">The item object.</param>
     /// <returns></returns>
-    public TItem GetOrCreateItem<TItem>(Func<TItem> creation)
-    {
-        if (items.TryGetValue(typeof(TItem), out var item))
-            return (TItem) item;
-
-        item = creation();
-
-        if (item is null)
-            throw new InvalidOperationException("The item returned by creation function is null");
-
-        items.Add(typeof(TItem), item);
-
-        return (TItem) item;
-    }
+    public TItem GetOrCreateItem<TItem>(Func<TItem> creation) => items.GetOrCreateItem(creation);
 
     /// <summary>
     /// Creates an object of <see cref="WithItem{TItem}"/> to add an instance as multiple item types.
@@ -133,10 +123,7 @@ public sealed class DiagnosticOperation : IDisposable
     /// <typeparam name="TItem">The item type.</typeparam>
     /// <param name="item">The item instance.</param>
     /// <returns>Component for adding the item instance as multiple types.</returns>
-    public WithItem<TItem> With<TItem>(TItem item)
-    {
-        return new WithItem<TItem>(item, items);
-    }
+    public WithItem<TItem> With<TItem>(TItem item) => items.With(item);
 
     /// <summary>
     /// Creates a child operation, with options to share items and initialise it.
@@ -147,11 +134,8 @@ public sealed class DiagnosticOperation : IDisposable
     /// <returns>New instance of <see cref="DiagnosticOperation"/>.</returns>
     public DiagnosticOperation Child(string operationName, bool copyItems = true, bool start = false)
     {
-        var newOperation = new DiagnosticOperation(Listener, operationName);
-        if (copyItems)
-            foreach (var item in items)
-                newOperation.items.Add(item.Key, item.Value);
-
+        var newOperation = new DiagnosticOperation(Listener, operationName, copyItems ? items : null);
+        
         if (start)
             newOperation.Start();
 
@@ -170,9 +154,7 @@ public sealed class DiagnosticOperation : IDisposable
         if (ex is null)
             throw new ArgumentNullException(nameof(ex));
 
-        var newOperation = new DiagnosticOperation(Listener, $"{OperationName}Error");
-        foreach (var item in items)
-            newOperation.items.Add(item.Key, item.Value);
+        var newOperation = new DiagnosticOperation(Listener, $"{OperationName}Error", items);
 
         if (typeof(Exception) == typeof(TException))
             newOperation.AddItem(ex);
@@ -199,7 +181,7 @@ public sealed class DiagnosticOperation : IDisposable
 
         if (isDiagnosticsEnabled)
         {
-            Listener.StartActivity(Activity, this);
+            Listener.StartActivity(Activity, items);
         }
         else
         {
@@ -228,7 +210,7 @@ public sealed class DiagnosticOperation : IDisposable
 
         if (isDiagnosticsEnabled)
         {
-            Listener.StopActivity(Activity, this);
+            Listener.StopActivity(Activity, items);
         }
         else
         {
@@ -242,61 +224,6 @@ public sealed class DiagnosticOperation : IDisposable
         if (isDisposed)
         {
             throw new InvalidOperationException("The operation was discarded and stopped previously.");
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private object? InternalTryGetItem(Type type)
-    {
-        return items.Values.FirstOrDefault(type.IsInstanceOfType);
-    }
-
-    /// <summary>
-    /// Component to add an instance as multiple item types to a <see cref="DiagnosticOperation"/>.
-    /// </summary>
-    /// <typeparam name="TItem">The item type.</typeparam>
-    public sealed class WithItem<TItem>
-    {
-        private readonly TItem item;
-        private readonly Dictionary<Type, object> items;
-
-        /// <summary>
-        /// Creates a new component
-        /// </summary>
-        /// <param name="item">The item instance.</param>
-        /// <param name="items">items of type <see cref="DiagnosticOperation"/>.</param>
-        internal WithItem(TItem item, Dictionary<Type, object> items)
-        {
-            this.item = item ?? throw new ArgumentNullException(nameof(item));
-            this.items = items ?? throw new ArgumentNullException(nameof(items));
-        }
-
-        /// <summary>
-        /// Self add as an item.
-        /// </summary>
-        /// <returns>The same instance for chained calls.</returns>
-        public WithItem<TItem> Add()
-        {
-            items.Add(typeof(TItem), item!);
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the item as the specified type.
-        /// </summary>
-        /// <typeparam name="TItemType">The item type to be added.</typeparam>
-        /// <returns>The same instance for chained calls.</returns>
-        public WithItem<TItem> AddAs<TItemType>()
-        {
-            if (item! is not TItemType)
-            {
-                throw new ArgumentException(
-                    $"The current item is of type '{item!.GetType().FullName}' " +
-                    $"and does not implement the other type informed that is '{typeof(TItemType).FullName}'.");
-            }
-
-            items.Add(typeof(TItemType), item!);
-            return this;
         }
     }
 }
