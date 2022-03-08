@@ -39,6 +39,17 @@ public abstract class DiagnosticEventObserverBase : IDiagnosticEventObserver
     }
 
     /// <summary>
+    /// Used by default implementation.
+    /// </summary>
+    /// <param name="eventHandlers">The event handlers.</param>
+    protected internal DiagnosticEventObserverBase(IDiagnosticEventHandler[] eventHandlers)
+    {
+        this.eventHandlers = eventHandlers;
+        enabledOperationsNames = GetEnabledOperationsNames().ToArray();
+        ignoreOperationNames = GetIgnoreOperationNames().ToArray();
+    }
+
+    /// <summary>
     /// <para>
     ///     Listener and event names.
     /// </para>
