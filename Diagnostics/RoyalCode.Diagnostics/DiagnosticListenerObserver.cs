@@ -25,9 +25,42 @@ namespace RoyalCode.Diagnostics
         private readonly DiagnosticsOptions options;
 
         /// <summary>
-        /// Create a new diagnostic observer.
+        /// Create a new diagnostic listener observer
         /// </summary>
-        /// <param name="eventObservers">The event observer.</param>
+        /// <param name="observers">The event observers.</param>
+        /// <returns>a new instance of <see cref="DiagnosticListenerObserver"/>.</returns>
+        public static DiagnosticListenerObserver Create(params IDiagnosticEventObserver[] observers)
+        {
+            return new DiagnosticListenerObserver(observers, Options.Create(new DiagnosticsOptions()));
+        }
+
+        /// <summary>
+        /// Create a new diagnostic listener observer with a default diagnostic event observer.
+        /// </summary>
+        /// <param name="listenerName">The listener name for the default event observer.</param>
+        /// <param name="addHandlers">Action to configure handlers for the event observer.</param>
+        /// <returns>a new instance of <see cref="DiagnosticListenerObserver"/>.</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     If <paramref name="addHandlers"/> is null.
+        /// </exception>
+        public static DiagnosticListenerObserver Create(
+            string listenerName,
+            Action<Action<IDiagnosticEventHandler>> addHandlers)
+        {
+            if (addHandlers == null) throw new ArgumentNullException(nameof(addHandlers));
+
+            var handlers = new List<IDiagnosticEventHandler>();
+            addHandlers(handlers.Add);
+            
+            var handle = new DefaultDiagnosticEventObserver(listenerName, handlers.ToArray());
+            
+            return Create(handle);
+        }
+        
+        /// <summary>
+        /// Create a new diagnostic listener observer.
+        /// </summary>
+        /// <param name="eventObservers">The event observers.</param>
         /// <param name="options">Options.</param>
         public DiagnosticListenerObserver(
             IEnumerable<IDiagnosticEventObserver> eventObservers,
