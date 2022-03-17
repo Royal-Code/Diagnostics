@@ -135,9 +135,9 @@ public static class EventArgumentGetterFactory
 
         var assignVariable = Expression.Assign(
             variable,
-            member == null
+            member is null
                 ? cast
-                : (Expression) Expression.MakeMemberAccess(cast, member));
+                : Expression.MakeMemberAccess(cast, member));
 
         var newExpression = GetNewExpression<TArgument>(varType, variable);
 
@@ -158,7 +158,7 @@ public static class EventArgumentGetterFactory
         ParameterExpression variable;
         var value = Expression.Variable(typeof(TArgument), "value");
         variables.Add(value);
-        if (member != null)
+        if (member is not null)
         {
             variable = Expression.Variable(member.PropertyType, "variable");
             variables.Add(variable);
