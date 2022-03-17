@@ -33,7 +33,7 @@ public class DiagnosticEventHandler<TArgument> : IDiagnosticEventHandler
         if (eventArgs is null)
             throw new ArgumentNullException(nameof(eventArgs));
 
-        getter ??= EventArgumentGetterFactory.Get<TArgument>(eventArgs.GetType(), propertyName!);
+        getter ??= EventArgumentGetterFactory.Get<TArgument>(eventArgs.GetType(), propertyName);
 
         var argument = getter(eventArgs);
         if (argument is not null)
