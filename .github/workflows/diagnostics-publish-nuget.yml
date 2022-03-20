@@ -1,0 +1,24 @@
+name: diagnostics-publish-nuget
+
+on:
+   # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+      
+    - name: Build and pack
+      run: sudo /home/runner/.dotnet/dotnet build ./**/*.csproj -c Release
+    
+    - name: publish nuget package
+      run: sudo /home/runner/.dotnet/dotnet nuget push ./**/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
