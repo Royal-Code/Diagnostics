@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\RoyalCode.Diagnostics.AspNetCore\RoyalCode.Diagnostics.AspNetCore.csproj" />
       <ProjectReference Include="..\RoyalCode.Diagnostics\RoyalCode.Diagnostics.csproj" />
     </ItemGroup>
 
