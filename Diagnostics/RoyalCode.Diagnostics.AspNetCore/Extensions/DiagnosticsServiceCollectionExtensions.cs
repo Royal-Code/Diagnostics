@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using RoyalCode.Diagnostics.AspNetCore.Filters;
+using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,6 +26,24 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IStartupFilter, DiagnosticListenerObserverStartup>();
 
             return new DefaultDiagnosticEventListenerBuilder(services);
+        }
+
+        /// <summary>
+        /// <para>
+        ///     Subscribe the <see cref="DiagnosticListenerObserver"/> to <see cref="DiagnosticListener"/>.
+        /// </para>
+        /// <para>
+        ///     This is necessary when you want to listen for diagnostic events via services 
+        ///     and the host is a worker and <see cref="IStartupFilter"/> is not invoked.
+        /// </para>
+        /// </summary>
+        /// <param name="host">The app host.</param>
+        /// <returns>Same instace of <paramref name="host"/>.</returns>
+        public static IHost SubscribeDiagnosticListenerObserver(this IHost host)
+        {
+            var observer = host.Services.GetRequiredService<DiagnosticListenerObserver>();
+            DiagnosticListener.AllListeners.Subscribe(observer);
+            return host;
         }
 
         /// <summary>

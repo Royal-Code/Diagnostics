@@ -75,6 +75,6 @@ public class DiagnosticOperationFactory<TNames>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected static DiagnosticOperation CreateOperation(string operationName)
-        => new DiagnosticOperation(Listener, operationName);
+        => new (Listener, operationName);
 
 }
