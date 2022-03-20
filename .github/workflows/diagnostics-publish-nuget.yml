@@ -19,7 +19,9 @@ jobs:
       
     - name: Build and pack Diagnostics
       run: sudo /home/runner/.dotnet/dotnet build ./Diagnostics/RoyalCode.Diagnostics/RoyalCode.Diagnostics.csproj -c Release
+      
     - name: Build and pack AspNetCore
-      run: sudo /home/runner/.dotnet/dotnet build ./Diagnostics/RoyalCode.Diagnostics.AspNetCore/RoyalCode.Diagnostics.AspNetCore.csproj -c Release,
+      run: sudo /home/runner/.dotnet/dotnet build ./Diagnostics/RoyalCode.Diagnostics.AspNetCore/RoyalCode.Diagnostics.AspNetCore.csproj -c Release
+      
     - name: publish nuget package
       run: sudo /home/runner/.dotnet/dotnet nuget push ./**/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
